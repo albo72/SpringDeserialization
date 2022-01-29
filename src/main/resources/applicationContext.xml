@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans  xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:context="http://www.springframework.org/schema/context"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!--<context:component-scan base-package="com.albo.deserialization"/>
+
+    <bean id="propertyManager"
+          class="com.albo.deserialization.util.PropertyManager">
+    </bean>
+
+    <bean id="reader"
+          class="com.albo.deserialization.reader.UserReaderWithJackson">
+    </bean>
+
+    <bean id="userValidator"
+        class="com.albo.deserialization.util.UserValidator">
+    </bean>
+
+    <bean id="usersDataBase"
+          class="com.albo.deserialization.db.UsersDataBase">
+    </bean>
+
+    <bean id="userService"
+          class="com.albo.deserialization.service.UserService">
+        <constructor-arg ref="propertyManager"/>
+        <constructor-arg ref="reader"/>
+        <constructor-arg ref="userValidator"/>
+        <constructor-arg ref="usersDataBase"/>
+    </bean>
+-->
+
+</beans>

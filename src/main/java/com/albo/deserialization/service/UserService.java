@@ -1,15 +1,15 @@
 package com.albo.deserialization.service;
 
 import com.albo.deserialization.db.UsersDataBase;
-import com.albo.deserialization.util.PropertyManager;
+import com.albo.deserialization.manager.ConfigFileManager;
 import com.albo.deserialization.entity.User;
-import com.albo.deserialization.exception.PropertyManagerException;
+import com.albo.deserialization.exception.ConfigManagerException;
 import com.albo.deserialization.reader.Reader;
-import com.albo.deserialization.util.UserValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.Validator;
 
 import java.io.FileNotFoundException;
 import java.util.Map;
@@ -18,14 +18,14 @@ import java.util.Map;
 public class UserService {
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
-    private final PropertyManager propertyManager;
+    private final ConfigFileManager configManager;
     private final Reader<User> reader;
-    private final UserValidator userValidator;
+    private final Validator userValidator;
     private final UsersDataBase usersDataBase;
 
-    public UserService(PropertyManager propertyManager, Reader<User> reader,
-                       UserValidator userValidator, UsersDataBase usersDataBase) {
-        this.propertyManager = propertyManager;
+    public UserService(ConfigFileManager configManager, Reader<User> reader,
+                       Validator userValidator, UsersDataBase usersDataBase) {
+        this.configManager = configManager;
         this.reader = reader;
         this.userValidator = userValidator;
         this.usersDataBase = usersDataBase;
@@ -35,7 +35,7 @@ public class UserService {
         User user;
         Map<String, String> mapFromConfig = null;
         try {
-            mapFromConfig = propertyManager.getHashMapFromProperties(configName);
+            mapFromConfig = configManager.getHashMap(configName);
             for (Map.Entry<String, String> entry : mapFromConfig.entrySet()) {
                 try {
                     user = reader.read(entry.getValue());
@@ -52,7 +52,7 @@ public class UserService {
                     log.error("File with name {} not found", entry.getKey(), e);
                 }
             }
-        } catch (PropertyManagerException e) {
+        } catch (ConfigManagerException e) {
             log.error("Config is not found", e);
         }
     }

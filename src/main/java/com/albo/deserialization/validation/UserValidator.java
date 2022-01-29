@@ -1,4 +1,4 @@
-package com.albo.deserialization.util;
+package com.albo.deserialization.validation;
 
 import com.albo.deserialization.entity.User;
 import org.springframework.stereotype.Component;

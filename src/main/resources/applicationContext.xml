@@ -7,18 +7,18 @@
         http://www.springframework.org/schema/context
         http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <!--<context:component-scan base-package="com.albo.deserialization"/>
+<!--    <context:component-scan base-package="com.albo.deserialization"/>-->
 
-    <bean id="propertyManager"
-          class="com.albo.deserialization.util.PropertyManager">
+    <bean id="configFileManager"
+          class="com.albo.deserialization.manager.PropertyManager">
     </bean>
 
     <bean id="reader"
           class="com.albo.deserialization.reader.UserReaderWithJackson">
     </bean>
 
-    <bean id="userValidator"
-        class="com.albo.deserialization.util.UserValidator">
+    <bean id="validator"
+        class="com.albo.deserialization.validation.UserValidator">
     </bean>
 
     <bean id="usersDataBase"
@@ -27,11 +27,18 @@
 
     <bean id="userService"
           class="com.albo.deserialization.service.UserService">
-        <constructor-arg ref="propertyManager"/>
+        <constructor-arg ref="configFileManager"/>
         <constructor-arg ref="reader"/>
-        <constructor-arg ref="userValidator"/>
+        <constructor-arg ref="validator"/>
         <constructor-arg ref="usersDataBase"/>
     </bean>
--->
+
+    <bean id="startEventHandler"
+          class="com.albo.deserialization.eventhandling.StartEventHandler">
+    </bean>
+
+    <bean id="stopEventHandler"
+          class="com.albo.deserialization.eventhandling.StopEventHandler">
+    </bean>
 
 </beans>

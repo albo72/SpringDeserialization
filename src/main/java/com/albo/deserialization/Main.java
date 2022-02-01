@@ -7,15 +7,14 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class Main {
     public static void main(String[] args) {
-//        ConfigurableApplicationContext context = new ClassPathXmlApplicationContext(
-//                "applicationContext.xml"
-//        );
-        ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(SpringConfig.class);
+        ConfigurableApplicationContext context = new ClassPathXmlApplicationContext(
+                "applicationContext.xml"
+        );
+//        ConfigurableApplicationContext context = new AnnotationConfigApplicationContext("com.albo.deserialization");
         context.start();
         UserService userService = context.getBean("userService", UserService.class);
-        userService.deserialize("config.properties");
-        userService.deserialize("config2.properties");
-        System.out.println(userService.getUsersDataBase().getUsersDB());
+        userService.run();
+        userService.printUsersFromDataBaseToConsole();
         context.stop();
         context.close();
     }

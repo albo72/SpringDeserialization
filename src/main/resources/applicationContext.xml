@@ -8,9 +8,11 @@
         http://www.springframework.org/schema/context/spring-context.xsd">
 
 <!--    <context:component-scan base-package="com.albo.deserialization"/>-->
+    <context:property-placeholder location="config.properties"/>
 
-    <bean id="configFileManager"
-          class="com.albo.deserialization.manager.PropertyManager">
+    <bean id="config"
+          class="com.albo.deserialization.manager.Config">
+        <property name="files" value="#{'${files}'.split(',')}"/>
     </bean>
 
     <bean id="reader"
@@ -27,7 +29,7 @@
 
     <bean id="userService"
           class="com.albo.deserialization.service.UserService">
-        <constructor-arg ref="configFileManager"/>
+        <constructor-arg ref="config"/>
         <constructor-arg ref="reader"/>
         <constructor-arg ref="validator"/>
         <constructor-arg ref="usersDataBase"/>

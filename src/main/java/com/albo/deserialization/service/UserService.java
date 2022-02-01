@@ -1,63 +1,66 @@
 package com.albo.deserialization.service;
 
 import com.albo.deserialization.db.UsersDataBase;
-import com.albo.deserialization.manager.ConfigFileManager;
 import com.albo.deserialization.entity.User;
-import com.albo.deserialization.exception.ConfigManagerException;
+import com.albo.deserialization.manager.Config;
 import com.albo.deserialization.reader.Reader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.validation.Validator;
 
 import java.io.FileNotFoundException;
-import java.util.Map;
 
 @Component
 public class UserService {
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
-    private final ConfigFileManager configManager;
+    private final Config config;
     private final Reader<User> reader;
     private final Validator userValidator;
     private final UsersDataBase usersDataBase;
 
-    public UserService(ConfigFileManager configManager, Reader<User> reader,
+    public UserService(Config config, Reader<User> reader,
                        Validator userValidator, UsersDataBase usersDataBase) {
-        this.configManager = configManager;
+        this.config = config;
         this.reader = reader;
         this.userValidator = userValidator;
         this.usersDataBase = usersDataBase;
     }
 
-    public void deserialize(String configName) {
+    public UsersDataBase getUsersDataBase() {
+        return usersDataBase;
+    }
+
+    public void run() {
         User user;
-        Map<String, String> mapFromConfig = null;
-        try {
-            mapFromConfig = configManager.getHashMap(configName);
-            for (Map.Entry<String, String> entry : mapFromConfig.entrySet()) {
-                try {
-                    user = reader.read(entry.getValue());
-                    BeanPropertyBindingResult result = new BeanPropertyBindingResult(
-                            user, "User from " + entry.getKey());
-                    userValidator.validate(user, result);
-                    if (result.hasErrors()) {
-                        log.error("Not valid fields in the {}", entry.getKey());
-                        log.error(result.getAllErrors().toString());
-                    } else {
-                        usersDataBase.saveUser(user);
+        for (String filePath : config.getFiles()) {
+            try {
+                user = reader.read(filePath);
+                BeanPropertyBindingResult result = new BeanPropertyBindingResult(
+                        user, "User from " + filePath);
+                userValidator.validate(user, result);
+                if (result.hasErrors()) {
+                    StringBuilder errorsStr = new StringBuilder("Not valid fields in " + filePath + ": ");
+                    for (ObjectError error : result.getAllErrors()) {
+                        errorsStr.append(error.getDefaultMessage()).append("; ");
                     }
-                } catch (FileNotFoundException e) {
-                    log.error("File with name {} not found", entry.getKey(), e);
+                    log.error(errorsStr.toString());
+                } else {
+                    usersDataBase.saveUser(user);
                 }
+            } catch (FileNotFoundException e) {
+                log.error("File with path {} not found", filePath, e);
             }
-        } catch (ConfigManagerException e) {
-            log.error("Config is not found", e);
         }
     }
 
-    public UsersDataBase getUsersDataBase() {
-        return usersDataBase;
+    public void printUsersFromDataBaseToConsole(){
+        for (User user : usersDataBase.getUsersDB()) {
+            System.out.println(new StringBuilder("User with name:").append(user.getName()).append(", password:").
+                    append(user.getPassword()).append(", email:").append(user.getEmail()).append(";"));
+        }
     }
 }
